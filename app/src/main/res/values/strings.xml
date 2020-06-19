@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MVI Skel</string>
+    <string name="fetch_user">Fetch User</string>
+</resources>
