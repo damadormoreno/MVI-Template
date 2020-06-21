@@ -1,31 +1,36 @@
-package com.deneb.astro.mviskel.ui.main.view
+package com.deneb.astro.mviskel.ui.herolist
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.deneb.astro.mviskel.R
 import com.deneb.astro.mviskel.data.model.Hero
-import com.deneb.astro.mviskel.ui.main.adapter.MainAdapter
-import com.deneb.astro.mviskel.ui.main.intent.MainIntent
-import com.deneb.astro.mviskel.ui.main.viewmodel.MainViewModel
-import com.deneb.astro.mviskel.ui.main.viewstate.MainState
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_hero_list.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-class MainActivity : AppCompatActivity() {
+class HeroListFragment : Fragment() {
 
-    private val mainViewModel: MainViewModel by inject()
-    private var adapter = MainAdapter(arrayListOf())
+    private val heroListViewModel: HeroListViewModel by inject()
+    private var adapter =
+        HeroListAdapter(arrayListOf())
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_hero_list, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         setupUI()
         observeViewModel()
@@ -35,13 +40,13 @@ class MainActivity : AppCompatActivity() {
     private fun setupClicks() {
         buttonFetchUser.setOnClickListener {
             lifecycleScope.launch {
-                mainViewModel.userIntent.send(MainIntent.FetchHeros)
+                heroListViewModel.userIntent.send(HeroListIntent.FetchHeros)
             }
         }
     }
 
     private fun setupUI() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.run {
             addItemDecoration(
                 DividerItemDecoration(
@@ -53,29 +58,28 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
     }
 
-
     private fun observeViewModel() {
         lifecycleScope.launch {
 
-            mainViewModel.state.collect {
+            heroListViewModel.state.collect {
                 when (it) {
-                    is MainState.Idle -> {
+                    is HeroListState.Idle -> {
 
                     }
-                    is MainState.Loading -> {
+                    is HeroListState.Loading -> {
                         buttonFetchUser.visibility = View.GONE
                         progressBar.visibility = View.VISIBLE
                     }
 
-                    is MainState.Heroes -> {
+                    is HeroListState.Heroes -> {
                         progressBar.visibility = View.GONE
                         buttonFetchUser.visibility = View.GONE
                         renderList(it.heroes)
                     }
-                    is MainState.Error -> {
+                    is HeroListState.Error -> {
                         progressBar.visibility = View.GONE
                         buttonFetchUser.visibility = View.VISIBLE
-                        Toast.makeText(this@MainActivity, it.error, Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, it.error, Toast.LENGTH_LONG).show()
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.deneb.astro.mviskel.ui.main.adapter
+package com.deneb.astro.mviskel.ui.herolist
 
 import android.view.LayoutInflater
 import android.view.View
@@ -9,9 +9,9 @@ import com.deneb.astro.mviskel.R
 import com.deneb.astro.mviskel.data.model.Hero
 import kotlinx.android.synthetic.main.item_layout.view.*
 
-class MainAdapter(
+class HeroListAdapter(
     private val heroes: ArrayList<Hero>
-) : RecyclerView.Adapter<MainAdapter.DataViewHolder>() {
+) : RecyclerView.Adapter<HeroListAdapter.DataViewHolder>() {
 
     class DataViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(hero: Hero) {

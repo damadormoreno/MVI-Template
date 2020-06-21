@@ -1,10 +1,10 @@
-package com.deneb.astro.mviskel.ui.main.viewmodel
+package com.deneb.astro.mviskel.ui.herolist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.deneb.astro.mviskel.data.repository.MainRepository
-import com.deneb.astro.mviskel.ui.main.intent.MainIntent
-import com.deneb.astro.mviskel.ui.main.viewstate.MainState
+import com.deneb.astro.mviskel.ui.herolist.HeroListIntent
+import com.deneb.astro.mviskel.ui.herolist.HeroListState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,13 +14,14 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
-class MainViewModel(
+class HeroListViewModel(
     private val repository: MainRepository.MainRepositoryImpl
 ) : ViewModel() {
 
-    val userIntent = Channel<MainIntent>(Channel.UNLIMITED)
-    private val _state = MutableStateFlow<MainState>(MainState.Idle)
-    val state: StateFlow<MainState>
+    val userIntent = Channel<HeroListIntent>(Channel.UNLIMITED)
+    private val _state = MutableStateFlow<HeroListState>(
+        HeroListState.Idle)
+    val state: StateFlow<HeroListState>
         get() = _state
 
     init {
@@ -31,7 +32,7 @@ class MainViewModel(
         viewModelScope.launch {
             userIntent.consumeAsFlow().collect {
                 when (it) {
-                    is MainIntent.FetchHeros -> fetchHeros()
+                    is HeroListIntent.FetchHeros -> fetchHeros()
                 }
             }
         }
@@ -39,11 +40,11 @@ class MainViewModel(
 
     private fun fetchHeros() {
         viewModelScope.launch {
-            _state.value = MainState.Loading
+            _state.value = HeroListState.Loading
             _state.value = try {
-                MainState.Heroes(repository.getHeroes())
+                HeroListState.Heroes(repository.getHeroes())
             } catch (e: Exception) {
-                MainState.Error(e.localizedMessage)
+                HeroListState.Error(e.localizedMessage)
             }
         }
     }
