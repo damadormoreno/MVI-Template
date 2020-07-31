@@ -1,10 +1,12 @@
 package com.deneb.astro.mviskel.ui.herolist
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.deneb.astro.mviskel.core.functional.Event
+import com.deneb.astro.mviskel.data.model.Hero
 import com.deneb.astro.mviskel.data.repository.MainRepository
-import com.deneb.astro.mviskel.ui.herolist.HeroListIntent
-import com.deneb.astro.mviskel.ui.herolist.HeroListState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,11 @@ class HeroListViewModel(
     private val repository: MainRepository.MainRepositoryImpl
 ) : ViewModel() {
 
-    val userIntent = Channel<HeroListIntent>(Channel.UNLIMITED)
+    private val _navigateToDetail = MutableLiveData<Event<Hero>>()
+    val navigateToDetail: LiveData<Event<Hero>>
+        get() = _navigateToDetail
+
+    val herolistIntent = Channel<HeroListIntent>(Channel.UNLIMITED)
     private val _state = MutableStateFlow<HeroListState>(
         HeroListState.Idle)
     val state: StateFlow<HeroListState>
@@ -30,13 +36,18 @@ class HeroListViewModel(
 
     private fun handleIntent() {
         viewModelScope.launch {
-            userIntent.consumeAsFlow().collect {
+            herolistIntent.consumeAsFlow().collect {
                 when (it) {
                     is HeroListIntent.FetchHeros -> fetchHeros()
                 }
             }
         }
     }
+
+    fun clickHero(hero: Hero) {
+        _navigateToDetail.value = Event(hero)
+    }
+
 
     private fun fetchHeros() {
         viewModelScope.launch {

@@ -2,6 +2,7 @@ package com.deneb.astro.mviskel.data.model
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Hero(
     @SerializedName("assets")
@@ -30,4 +31,4 @@ data class Hero(
     val selfDevotion: SelfDevotion,
     @SerializedName("zodiac")
     val zodiac: String
-)
+) : Serializable

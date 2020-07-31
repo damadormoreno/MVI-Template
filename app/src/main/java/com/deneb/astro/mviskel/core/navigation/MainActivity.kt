@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             toolbar.title = when (destination.id) {
                 R.id.heroListFragment -> "Hero List"
+                R.id.heroDetailFragment -> "Detail Hero"
                 else -> "Hero List"
             }
         }
